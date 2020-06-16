@@ -10,16 +10,47 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:ocamlformat-vscode-extension.helloWorld"
+		"onCommand:ocamlformat-vscode-extension.ocamlformat"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"languages": [
+			{
+			  "id": "ocaml",
+			  "extensions": [
+				".ml",
+				".mli"
+			  ]
+			}
+		],
 		"commands": [
 			{
-				"command": "ocamlformat-vscode-extension.helloWorld",
+				"command": "ocamlformat-vscode-extension.ocamlformat",
 				"title": "Hello World"
 			}
-		]
+		],
+		"configuration": {
+			"title": "ocamlformat-vscode-extension",
+			"properties": {
+				"ocamlformat-vscode-extension.ocamlformatPath": {
+					"title": "Path to ocamlformat",
+					"type": "string",
+					"default": "",
+					"description": "If empty, ${OPAM_SWITCH_PREFIX}/bin/ocamlformat is used."
+				},
+				"ocamlformat-vscode-extension.ocamlformatOption": {
+					"title": "Option for ocamlformat",
+					"type": "string",
+					"default": "--inplace,--enable-outside-detected-project",
+					"description": "If option is multiple, use a comma as delimited string."
+				},
+				"ocamlformat-vscode-extension.evalOpamEnv": {
+					"title": "Run 'eval $(opam env)' before executing ocamlformat",
+					"type": "boolean",
+					"default": false
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
