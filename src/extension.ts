@@ -7,9 +7,13 @@ import path = require("path");
 const OCAMLFORMAT_BIN_NAME = "ocamlformat";
 
 const makeOcamlformatPathUsingOpam = (dir: string) => {
-	const res = execSync("eval $(opam env --readonly) > /dev/null 2>&1 && /bin/echo -n $OPAM_SWITCH_PREFIX", {
+	const cmd = "eval $(opam env --readonly) > /dev/null 2>&1 && /bin/echo -n $OPAM_SWITCH_PREFIX"
+	const res = execSync(cmd, {
 		cwd: dir
 	});
+	if (res.length == 0) {
+		throw new Error(`the command outputs nothing to stdout: ${cmd}`);
+	}
 	return `${res}/bin/${OCAMLFORMAT_BIN_NAME}`;
 }
 
@@ -25,8 +29,6 @@ const format = (filename: string) => {
 		cwd: path.dirname(filename)
 	});
 }
-
-
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -44,9 +46,22 @@ export function activate(context: vscode.ExtensionContext) {
 		const { activeTextEditor } = vscode.window
 		if (!activeTextEditor) return
 		const { document } = activeTextEditor
-		const res = format(document.fileName);
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ocamlformat-vscode-extension!');
+
+		try {
+			const res = format(document.fileName);
+
+			if (res.error) {
+				vscode.window.showErrorMessage(res.error.message);
+			} else {
+				if (res.status == 0) {
+					vscode.window.showInformationMessage('ocamlformat success!');
+				} else {
+					vscode.window.showErrorMessage(res.stderr.toString());
+				}
+			}
+		} catch (error) {
+			vscode.window.showErrorMessage(error.message);
+		}
 	});
 
 	context.subscriptions.push(disposable);
