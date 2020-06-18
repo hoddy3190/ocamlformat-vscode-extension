@@ -32,7 +32,7 @@
 		"configuration": {
 			"title": "ocamlformat-vscode-extension",
 			"properties": {
-				"ocamlformat-vscode-extension.ocamlformatPath": {
+				"ocamlformat-vscode-extension.customOcamlformatPath": {
 					"title": "Path to ocamlformat",
 					"type": "string",
 					"default": "",
@@ -43,11 +43,6 @@
 					"type": "string",
 					"default": "--inplace,--enable-outside-detected-project",
 					"description": "If option is multiple, use a comma as delimited string."
-				},
-				"ocamlformat-vscode-extension.evalOpamEnv": {
-					"title": "Run 'eval $(opam env)' before executing ocamlformat",
-					"type": "boolean",
-					"default": false
 				}
 			}
 		}

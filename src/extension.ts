@@ -1,19 +1,23 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { spawnSync } from "child_process";
+import { spawnSync, execSync } from "child_process";
 import path = require("path");
+
+const OCAMLFORMAT_BIN_NAME = "ocamlformat";
+
+const makeOcamlformatPathUsingOpam = (dir: string) => {
+	const res = execSync("eval $(opam env --readonly) > /dev/null 2>&1 && /bin/echo -n $OPAM_SWITCH_PREFIX", {
+		cwd: dir
+	});
+	return `${res}/bin/${OCAMLFORMAT_BIN_NAME}`;
+}
 
 const format = (filename: string) => {
 	const config = vscode.workspace.getConfiguration("ocamlformat-vscode-extension");
 
-	if (config.get('evalOpamEnv')) {
-		const res = spawnSync("eval $(opam env --readonly)", [], {
-			cwd: path.dirname(filename)
-		});
-	}
+	const ocamlformatPath = <string>config.get('customOcamlformatPath') || makeOcamlformatPathUsingOpam(path.dirname(filename));
 
-	const ocamlformatPath = config.get('ocamlformatPath');
 	const ocamlformatOptions = (<string>config.get('ocamlformatOption')).split(',');
 	const args = ocamlformatOptions.concat(filename);
 
