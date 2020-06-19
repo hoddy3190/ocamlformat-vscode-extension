@@ -14,23 +14,23 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "ocamlformat-vscode-extension" is now active!');
 
-	const makeOcamlformatPathUsingOpam = (dir: string) => {
-		const cmd = "eval $(opam env --readonly) > /dev/null 2>&1 && /bin/echo -n $OPAM_SWITCH_PREFIX"
+	const makeOcamlformatPathUsingOpam = (dir: string): string => {
+		const cmd = "eval $(opam env --readonly) > /dev/null 2>&1 && /bin/echo -n $OPAM_SWITCH_PREFIX";
 		const res = execSync(cmd, {
 			cwd: dir
 		});
-		if (res.length == 0) {
+		if (res.length === 0) {
 			throw new Error(`the command outputs nothing to stdout: ${cmd}`);
 		}
 		return `${res}/bin/${OCAMLFORMAT_BIN_NAME}`;
-	}
+	};
 
 	const format = (filename: string) => {
 		const config = vscode.workspace.getConfiguration("ocamlformat-vscode-extension");
 
-		const ocamlformatPath = <string>config.get('customOcamlformatPath') || makeOcamlformatPathUsingOpam(path.dirname(filename));
+		const ocamlformatPath = config.get('customOcamlformatPath') as string || makeOcamlformatPathUsingOpam(path.dirname(filename));
 
-		const ocamlformatOptions = (<string>config.get('ocamlformatOption')).split(',');
+		const ocamlformatOptions = (config.get('ocamlformatOption') as string).split(',');
 		const args = ocamlformatOptions.concat(filename);
 
 		// TODO: args uniq
@@ -39,11 +39,11 @@ export function activate(context: vscode.ExtensionContext) {
 		return spawnSync(ocamlformatPath, args, {
 			cwd: path.dirname(filename)
 		});
-	}
+	};
 
-	const getFullRange = (document: vscode.TextDocument) => {
-		var firstLine = document.lineAt(0);
-		var lastLine = document.lineAt(document.lineCount - 1);
+	const getFullRange = (document: vscode.TextDocument): vscode.Range => {
+		const firstLine = document.lineAt(0);
+		const lastLine = document.lineAt(document.lineCount - 1);
 		return new vscode.Range(firstLine.range.start, lastLine.range.end);
 	};
 
@@ -53,9 +53,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('ocamlformat-vscode-extension.ocamlformat', () => {
 			// The code you place here will be executed every time your command is executed
-			const { activeTextEditor } = vscode.window
-			if (!activeTextEditor) return
-			const { document } = activeTextEditor
+			const { activeTextEditor } = vscode.window;
+			if (!activeTextEditor) { return; }
+			const { document } = activeTextEditor;
 
 			try {
 				const res = format(document.fileName);
@@ -63,11 +63,11 @@ export function activate(context: vscode.ExtensionContext) {
 				if (res.error) {
 					vscode.window.showErrorMessage(res.error.message);
 				} else {
-					if (res.status == 0) {
-						const edit = new vscode.WorkspaceEdit()
-						const range = getFullRange(document)
-						edit.replace(document.uri, range, res.stdout.toString())
-						return vscode.workspace.applyEdit(edit)
+					if (res.status === 0) {
+						const edit = new vscode.WorkspaceEdit();
+						const range = getFullRange(document);
+						edit.replace(document.uri, range, res.stdout.toString());
+						return vscode.workspace.applyEdit(edit);
 					} else {
 						vscode.window.showErrorMessage(res.stderr.toString());
 					}
@@ -87,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
 					if (res.error) {
 						vscode.window.showErrorMessage(res.error.message);
 					} else {
-						if (res.status == 0) {
+						if (res.status === 0) {
 							return [vscode.TextEdit.replace(getFullRange(document), res.stdout.toString())];
 						} else {
 							vscode.window.showErrorMessage(res.stderr.toString());
@@ -100,6 +100,3 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}));
 }
-
-// this method is called when your extension is deactivated
-export function deactivate() {}
