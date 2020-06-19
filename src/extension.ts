@@ -25,9 +25,18 @@ const format = (filename: string) => {
 	const ocamlformatOptions = (<string>config.get('ocamlformatOption')).split(',');
 	const args = ocamlformatOptions.concat(filename);
 
+	// TODO: args uniq
+	// TODO: delete --inplace, -o, --output
+
 	return spawnSync(ocamlformatPath, args, {
 		cwd: path.dirname(filename)
 	});
+}
+
+const getFullRange = (document: vscode.TextDocument) => {
+	const firstLine = document.lineAt(0)
+	const lastLine = document.lineAt(document.lineCount - 1)
+	return new vscode.Range(0, firstLine.range.start.character, document.lineCount - 1, lastLine.range.end.character)
 }
 
 // this method is called when your extension is activated
@@ -54,7 +63,10 @@ export function activate(context: vscode.ExtensionContext) {
 				vscode.window.showErrorMessage(res.error.message);
 			} else {
 				if (res.status == 0) {
-					vscode.window.showInformationMessage('ocamlformat success!');
+					const edit = new vscode.WorkspaceEdit()
+					const range = getFullRange(document)
+					edit.replace(document.uri, range, res.stdout.toString())
+					return vscode.workspace.applyEdit(edit)
 				} else {
 					vscode.window.showErrorMessage(res.stderr.toString());
 				}
