@@ -12,19 +12,18 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "prettier"
     ],
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended"
     ],
     "rules": {
         "@typescript-eslint/class-name-casing": "warn",
-        "@typescript-eslint/semi": "warn",
         "@typescript-eslint/explicit-function-return-type": "off",
-        "curly": "warn",
         "eqeqeq": "warn",
-        "no-throw-literal": "warn",
-        "semi": "off"
+        "no-throw-literal": "warn"
     }
 }
