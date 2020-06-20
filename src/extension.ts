@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { spawnSync, execSync } from "child_process";
-import path = require("path");
+import * as path from "path";
 
 const OCAMLFORMAT_BIN_NAME = "ocamlformat";
 
