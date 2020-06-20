@@ -55,7 +55,9 @@
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
-		"test": "node ./out/test/runTest.js"
+		"utest": "mocha ./out/test/unit/**/*.test.js",
+		"itest": "node ./out/test/integration/runTest.js",
+		"test": "npm run utest && npm run itest"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
