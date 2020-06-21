@@ -1,8 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { spawnSync, execSync } from "child_process";
 import * as path from "path";
+import * as cmd from "./cmd";
 
 const OCAMLFORMAT_BIN_NAME = "ocamlformat";
 
@@ -16,15 +16,16 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   const makeOcamlformatPathUsingOpam = (dir: string): string => {
-    const cmd =
+    const command =
       "eval $(opam env --readonly) > /dev/null 2>&1 && /bin/echo -n $OPAM_SWITCH_PREFIX";
-    const res = execSync(cmd, {
-      cwd: dir,
-    });
-    if (res.length === 0) {
-      throw new Error(`the command outputs nothing to stdout: ${cmd}`);
+    const res = cmd.execOnShell(command, dir);
+    if (res.stdout === "" && res.error === undefined) {
+      throw new Error(`OPAM_SWITCH_PREFIX is empty: ${cmd}`);
     }
-    return `${res}/bin/${OCAMLFORMAT_BIN_NAME}`;
+    if (res.error !== undefined) {
+      throw new Error(`the command occurs error: ${res.error.msg}`);
+    }
+    return `${res.stdout}/bin/${OCAMLFORMAT_BIN_NAME}`;
   };
 
   const format = (filename: string) => {
@@ -44,9 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     // TODO: args uniq
     // TODO: delete --inplace, -o, --output
 
-    return spawnSync(ocamlformatPath, args, {
-      cwd: path.dirname(filename),
-    });
+    return cmd.exec(ocamlformatPath, args, path.dirname(filename));
   };
 
   const getFullRange = (document: vscode.TextDocument): vscode.Range => {
@@ -72,17 +71,15 @@ export function activate(context: vscode.ExtensionContext) {
         try {
           const res = format(document.fileName);
 
-          if (res.error) {
-            vscode.window.showErrorMessage(res.error.message);
-          } else {
-            if (res.status === 0) {
-              const edit = new vscode.WorkspaceEdit();
-              const range = getFullRange(document);
-              edit.replace(document.uri, range, res.stdout.toString());
-              return vscode.workspace.applyEdit(edit);
-            } else {
-              vscode.window.showErrorMessage(res.stderr.toString());
-            }
+          if (res.stdout !== undefined) {
+            const edit = new vscode.WorkspaceEdit();
+            const range = getFullRange(document);
+            edit.replace(document.uri, range, res.stdout);
+            return vscode.workspace.applyEdit(edit);
+          }
+
+          if (res.error !== undefined) {
+            vscode.window.showErrorMessage(res.error.msg);
           }
         } catch (error) {
           vscode.window.showErrorMessage(error.message);
@@ -99,23 +96,22 @@ export function activate(context: vscode.ExtensionContext) {
         try {
           const res = format(document.fileName);
 
-          if (res.error) {
-            vscode.window.showErrorMessage(res.error.message);
-          } else {
-            if (res.status === 0) {
-              return [
-                vscode.TextEdit.replace(
-                  getFullRange(document),
-                  res.stdout.toString()
-                ),
-              ];
-            } else {
-              vscode.window.showErrorMessage(res.stderr.toString());
-            }
+          if (res.stdout !== undefined) {
+            return [
+              vscode.TextEdit.replace(
+                getFullRange(document),
+                res.stdout.toString()
+              ),
+            ];
+          }
+          if (res.error !== undefined) {
+            vscode.window.showErrorMessage(res.error.msg);
           }
         } catch (error) {
           vscode.window.showErrorMessage(error.message);
         }
+
+        // not change
         return [
           vscode.TextEdit.replace(getFullRange(document), document.getText()),
         ];
