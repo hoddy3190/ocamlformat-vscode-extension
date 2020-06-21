@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const makeOcamlformatPathUsingOpam = (dir: string): string => {
     const command =
-      "eval $(opam env --readonly) > /dev/null 2>&1 && /bin/echo -n $OPAM_SWITCH_PREFIX";
+      "eval $(opam env --readonly) > /dev/null && /bin/echo -n $OPAM_SWITCH_PREFIX";
     const res = cmd.execOnShell(command, dir);
     if (res.stdout === "" && res.error === undefined) {
       throw new Error(`OPAM_SWITCH_PREFIX is empty: ${cmd}`);
