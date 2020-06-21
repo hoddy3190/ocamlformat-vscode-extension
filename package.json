@@ -1,14 +1,23 @@
 {
 	"name": "ocamlformat-vscode-extension",
 	"displayName": "ocamlformat-vscode-extension",
-	"description": "",
+	"description": "vscode extension - simple wrapper of ocamlformat command",
 	"version": "0.0.1",
+	"publisher": "hoddy3190",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/hoddy3190/ocamlformat-vscode-extension.git"
+	},
+	"bugs": {
+		"url": "https://github.com/hoddy3190/ocamlformat-vscode-extension/issues"
+	},
+	"license": "MIT",
 	"engines": {
 		"vscode": "^1.46.0",
 		"node": "^12.18.1"
 	},
 	"categories": [
-		"Other"
+		"Formatters"
 	],
 	"activationEvents": [
 		"onCommand:ocamlformat-vscode-extension.ocamlformat",
