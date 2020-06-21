@@ -1,5 +1,7 @@
 # ocamlformat-vscode-extension README
 
+![](https://github.com/hoddy3190/ocamlformat-vscode-extension/workflows/test/badge.svg)
+
 This extension wraps `ocamlformat` command.  
 I tested only on OSX, so I don't know it will work on other operating systems.
 
