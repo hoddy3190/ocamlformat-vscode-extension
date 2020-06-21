@@ -29,7 +29,10 @@ export function exec(
   if (res.error) {
     return {
       stdout: undefined,
-      error: { kind: "ExecError", msg: res.error.message },
+      error: {
+        kind: "ExecError",
+        msg: `cannot find '${command}'. ${res.error.message}`,
+      },
     };
   }
 

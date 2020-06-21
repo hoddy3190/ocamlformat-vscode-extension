@@ -14,10 +14,12 @@ export function activate(context: vscode.ExtensionContext) {
       "eval $(opam env --readonly) > /dev/null && /bin/echo -n $OPAM_SWITCH_PREFIX";
     const res = cmd.execOnShell(command, dir);
     if (res.stdout === "" && res.error === undefined) {
-      throw new Error(`OPAM_SWITCH_PREFIX is empty: ${cmd}`);
+      throw new Error(`OPAM_SWITCH_PREFIX is empty: ${command}`);
     }
     if (res.error !== undefined) {
-      throw new Error(`the command occurs error: ${res.error.msg}`);
+      throw new Error(
+        `the command occurs error. command: ${command} msg: ${res.error.msg}`
+      );
     }
     return `${res.stdout}/bin/${OCAMLFORMAT_BIN_NAME}`;
   };
