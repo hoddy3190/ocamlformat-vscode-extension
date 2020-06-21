@@ -1,9 +1,10 @@
 # Change Log
 
-All notable changes to the "ocamlformat-vscode-extension" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+All notable changes to the "ocamlformat-vscode-extension" extension will be documented in this file.  
+cf. [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
+
+## [0.0.1] - 2020-06-21
 
 - Initial release
