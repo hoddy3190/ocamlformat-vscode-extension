@@ -28,7 +28,7 @@
 		"commands": [
 			{
 				"command": "ocamlformat-vscode-extension.ocamlformat",
-				"title": "Hello World"
+				"title": "ocamlformat"
 			}
 		],
 		"configuration": {
@@ -38,13 +38,13 @@
 					"title": "Path to ocamlformat",
 					"type": "string",
 					"default": "",
-					"description": "If empty, ${OPAM_SWITCH_PREFIX}/bin/ocamlformat is used."
+					"description": "If empty, `${OPAM_SWITCH_PREFIX}/bin/ocamlformat` is used. In that case, you have to set path to `opam` command."
 				},
 				"ocamlformat-vscode-extension.ocamlformatOption": {
-					"title": "Option for ocamlformat",
+					"title": "Options for ocamlformat",
 					"type": "string",
-					"default": "--inplace,--enable-outside-detected-project",
-					"description": "If option is multiple, use a comma as delimited string."
+					"default": "--enable-outside-detected-project",
+					"description": "If multiple, use a comma as delimited string (e.g. --enable-outside-detected-project,--ocp-indent-config).\nI recommend that you only put options here that you can't put in .ocamlformat.\nIt won't work with options like `--inplace`, `-o`, `--help` etc."
 				}
 			}
 		}
