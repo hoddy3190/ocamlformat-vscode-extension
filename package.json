@@ -2,7 +2,7 @@
 	"name": "ocamlformat-vscode-extension",
 	"displayName": "ocamlformat-vscode-extension",
 	"description": "vscode extension - simple wrapper of ocamlformat command",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "hoddy3190",
 	"repository": {
 		"type": "git",
