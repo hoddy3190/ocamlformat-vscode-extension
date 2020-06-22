@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
     return `${res.stdout}/bin/${OCAMLFORMAT_BIN_NAME}`;
   };
 
-  const format = (filename: string) => {
+  const format = (filename: string, text: string) => {
     const config = vscode.workspace.getConfiguration(
       "ocamlformat-vscode-extension"
     );
@@ -36,12 +36,21 @@ export function activate(context: vscode.ExtensionContext) {
     const ocamlformatOptions = (config.get(
       "ocamlformatOption"
     ) as string).split(",");
-    const args = ocamlformatOptions.concat(filename);
+
+    // If - is passed to ocamlformat, will read from stdin.
+    // Why is SRC passed to ocamlformat stdin, not file name?
+    //   1. It's fast because of no I/O
+    //   2. If file name is passed, it can't get edited text.
+    //      Especially in "formatOnSave", it formats without unsaved changes.
+    const args = ocamlformatOptions.concat([
+      "-",
+      `--name=${path.basename(filename)}`, // if - is passed, --name has to be also passed
+    ]);
 
     // TODO: args uniq
     // TODO: delete --inplace, -o, --output
 
-    return cmd.exec(ocamlformatPath, args, path.dirname(filename));
+    return cmd.exec(ocamlformatPath, args, path.dirname(filename), text);
   };
 
   const getFullRange = (document: vscode.TextDocument): vscode.Range => {
@@ -61,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
         const { document } = activeTextEditor;
 
         try {
-          const res = format(document.fileName);
+          const res = format(document.fileName, document.getText());
 
           if (res.stdout !== undefined) {
             const edit = new vscode.WorkspaceEdit();
@@ -86,7 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
         document: vscode.TextDocument
       ): vscode.TextEdit[] {
         try {
-          const res = format(document.fileName);
+          const res = format(document.fileName, document.getText());
 
           if (res.stdout !== undefined) {
             return [

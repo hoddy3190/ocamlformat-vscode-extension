@@ -21,10 +21,11 @@ export function execOnShell(
 export function exec(
   command: string,
   args?: string[],
-  cwd?: string
+  cwd?: string,
+  input?: string
 ): { stdout?: string; error?: { kind: string; msg: string } } {
   // use spawnSync not execSync because there is status code of return value
-  const res = spawnSync(command, args, { cwd, shell: false });
+  const res = spawnSync(command, args, { cwd, input, shell: false });
 
   if (res.error) {
     return {
